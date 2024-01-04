@@ -1,0 +1,19 @@
+--- demarrage du avec une base de donnee---
+docker run --name cardb -p 3306:3306 -e MARIADB_USER=root -e MARIADB_ROOT_PASSWORD=root -e MARIADB_DATABASE=cardb -d mariadb
+
+
+--- creation de reseau ----
+docker network create carNetwork
+
+--- liaison dans le meme reseau ---
+docker network connect carNetwork cardb 
+
+
+--- creation image docker ---
+docker build -t carbackend . 
+
+--- inspecter le reseau --
+docker network inspect carNetwork
+
+--- demarrage des container base de donnee et image application ---
+ docker run -p 8081:8080 --name carapp --net carNetwork -e MARIADB_HOST=cardb -e MARIADB_USER=root -e MARIADB_PASSWORD=root -e MYSQL_PORT=3306 carbackend
